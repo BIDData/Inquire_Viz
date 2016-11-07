@@ -1,0 +1,35 @@
+[{
+    "name": "LDA",
+    "useGPU": true,
+    "parameters":[]
+},
+{
+    "name": "KMeans-Cifar",
+    "useGPU": true,
+    "parameters":[]
+},
+{
+    "name": "KMeans-MNIST",
+    "useGPU": true,
+    "parameters":[]
+},
+{
+    "name": "KMeans-ImageNet",
+    "useGPU": true,
+    "parameters":[]
+},{
+    "name": "KMeans-MNIST",
+    "useGPU": true,
+    "parameters":[]
+},
+{
+    "name": "NMF-Cifar",
+    "useGPU": true,
+    "parameters":[]
+},
+{
+    "name": "LSTM",
+    "useGPU": true,
+    "parameters":[]
+}
+]

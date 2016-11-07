@@ -1,0 +1,47 @@
+Send:
+{
+    type:"model",
+    name:"LDA"
+}
+
+{
+    type:"register",
+    id:0,
+    name:"likeihood"/"modelmat",
+    datatype:"scalar"/"matrix"
+}
+
+{
+    type:"adjust",
+    name:"dim",
+    value:"50"
+}
+
+{
+    type:"init"
+}
+
+
+
+Recieve:
+{
+    type:"meta",
+    model:"LDA",
+    opts:{
+        name:["dim","useGPU"],
+        type:["int","boolean"]
+    },
+    output:{
+        name:["modelmat","likeihood"],
+        type:["matrix","scalar"]
+    },  
+    dict:["aa","bb"]
+}
+
+{
+    type:"data",
+    id:1,
+    data:0/[0,1,2],
+    dim:[10,10],
+    index
+}

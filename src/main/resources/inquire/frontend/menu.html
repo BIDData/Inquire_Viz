@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<title>Inquire</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<style>
+
+<!-- Load c3.css -->
+<link href="./css/c3.css" rel="stylesheet" type="text/css">
+<!-- Load d3.js and c3.js -->
+<script src="https://d3js.org/d3.v3.js"></script>
+<script src="./js/c3.min.js"></script>
+
+.city {display:none;}
+</style>
+<body>
+
+<div class="main">
+  <div class="logoAndSearchContainer">
+    <div class="logo">
+      <img src="./img/inquire.png">
+    </div>
+    <div id="custom-search-input">
+        <div class="input-group col-md-12">
+            <input type="text" class="form-control input-lg" placeholder="Search" />
+            <span class="input-group-btn">
+                <button class="btn btn-info btn-lg" type="button" onclick="showResults(event)">
+                    <i class="glyphicon glyphicon-search"></i>
+                </button>
+            </span>
+        </div>
+    </div>
+  </div>
+
+<div class="resultsContainer">
+    <div class="sidemenu">
+      <nav class="w3-sidenav w3-light-grey w3-card-2" style="width:130px">
+        <div class="w3-container">
+          <h3>Inquire</h3>
+        </div>
+        <a href="javascript:void(0)" id="QueriesButton" class="tablink" onclick="openTab(event, 'Queries')">Queries</a>
+        <a href="javascript:void(0)" id="MapButton" class="tablink" onclick="openTab(event, 'Map')">Road Map of Queries</a>
+        <a href="javascript:void(0)" id="VisualButton" class="tablink" onclick="openTab(event, 'Visual')">Visualization</a>
+      </nav>
+    </div>
+
+    <div style="margin-left:130px; width:50%">
+
+
+      <div id="Queries" class="w3-container city menuoption" style="display:none;">
+        <h2>Results</h2>
+        <p><strong>Query:</strong> This song reminded me of my childhood years</p>
+        <p>before i start my actualy entry ... i jus wanted to say that i found out today that my favorite postal service song which was the theme song to wicker park was a cover of a track on an old</p>
+        <br>
+        <p>mostly because of my conversation with nick , but also because at that exact moment the song i was listening to got to a line , this has been the best night of my life streetlight manifesto forget the song</p>
+        <br>
+        <p>posthumus ummm ... this song has no words and is the theme to cold case , and i can defintely say my high school years were nowhere near that creepy and disturbing !)</p>
+        <br>
+        <p>this song sounded great , shadows of light great crushing song off of the knowing , lost in a day another new song !</p>
+        <br>
+        <p>well: first and foremost dave grohl s drumming on any of the album but especially at the end of song for the dead , the album all the way up to the amazingly screamed six shooter give me more</p>
+        <br>
+        <p>but right this second , i m just gonna lie back and listen to this song , breakaway by kelly clarkson , the song i was listening to all those months ago , when i realized i was in love</p>
+        <br>
+        <p>this make me quite happy as this song has been my favorite song since i was years old .</p>
+        <br>
+        <p>this was not a song i fell for the first time i heard it but now it s my fav song of the new ark album</p>
+        <br>
+        <p>for darrin s song hall of fame : you oughta know from alanis morissette s jagged little pill album reminds me of my ex wife franci ... the album came out about years ago when we were still married</p>
+      </div>
+
+      <div id="Map" class="w3-container city menuoption" style="display:none;">
+        <h2>Road Map of Queries</h2>
+        <p>Paris is the capital of France.</p>
+        <p>The Paris area is one of the largest population centers in Europe, with more than 12 million inhabitants.</p>
+      </div>
+
+      <div id="Visual" class="w3-container city menuoption" style="display:none;">
+        <h2>Visualizations</h2>
+        <p><img src="./img/line_graph.png" style="width: 700px"></p>
+      </div>
+    </div>
+
+    <div class="filterContainer" id="Filter" style="display:none;">
+      <h5>Filters</h5>
+      <div class="filterSection">
+          <div class="option">
+              <input checked="true" type="checkbox" value="food"/>
+              <label>Diversity</label>
+          </div>
+          <div class="option">
+              <input checked="true" type="checkbox" value="place"/>
+              <label>Complement</label>
+          </div>
+          <div class="option">
+              <input checked="true" type="checkbox" value="musician"/>
+              <label>Randomized Data</label>
+          </div>
+      </div>
+    </div>
+</div>
+
+<script>
+function openTab(evt, id) {
+  var i, x, tablinks;
+  x = document.getElementsByClassName("city");
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < x.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+  }
+  document.getElementById(id).style.display = "block";
+  document.getElementById(id + 'Button').className += " w3-red";
+  document.getElementById('Filter').style.display = "block";
+}
+
+function showResults(evt) {
+   // document.getElementById('Queries').style.display = "block";
+   document.getElementById('Filter').style.display = "block";
+   // document.getElementById('Map').style.display = "none";
+   // document.getElementById('Visual').style.display = "none";
+   //openTab(evt, 'Queries');
+
+   var query = d3.select("input").node().value
+   d3.select("#Queries").attr("style","display:block")
+   d3.select("#Queries").selectAll("p").remove()
+   d3.select("#Queries").selectAll("br").remove()
+   d3.select("#Queries").append("p").text("Loading...... please wait")
+   d3.json("query?data="+query,function(res){
+       var arr = res.data.split("\n")
+       d3.select("#Queries").selectAll("p").remove()
+       d3.select("#Queries").selectAll("p").data(arr).enter()
+        .append("p").text(function(d){return d})
+   })
+}
+</script>
+
+
+</body>
+</html>

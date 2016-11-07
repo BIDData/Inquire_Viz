@@ -1,0 +1,24 @@
+.topicName:hover {
+  fill: orangered ;
+}
+
+.hisbar rect {
+  fill: steelblue;
+  shape-rendering: crispEdges;
+}
+
+.hisbar text {
+  fill: #fff;
+}
+
+.hisaxis path, .hisaxis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+
+.ui-dialog .ui-dialog-titlebar 
+{
+    height: 20px; /* or whatever you want */
+}
