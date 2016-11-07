@@ -27,6 +27,7 @@ class InquireServer extends LocalWebServer{
             val d = data.getOrElse("")
             val n = nFiles.getOrElse("10").toInt
             q.nFiles = n
+            println("Running query " + d +" with " + n + "files")
             Results.Ok(JsObject(Seq(                
                 "type" -> JsString("result"),
                 "data" -> JsString(q.query(d,20)))))

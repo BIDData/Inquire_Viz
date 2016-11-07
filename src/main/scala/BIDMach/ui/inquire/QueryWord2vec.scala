@@ -113,6 +113,7 @@ class QueryWord2vec {
     def query( query_s : String , top : Int, filter: String = "", minWords: Int = 5, maxWords : Int = 40)={
     	//information about the query
     	//date
+    	println("Begining to query")
     	val today = Calendar.getInstance().getTime();
     	val dataFormat = new SimpleDateFormat("yyyy.MM.dd.k:mm");
     	val currentTime = dataFormat.format(today);
@@ -272,7 +273,7 @@ class QueryWord2vec {
     	println("Total time for sparse matrix mul: "+mt)
     	println("Total t1: "+t1)
     	println("Total t2 (pull out top sentences): "+t2)
-    	println("it took " + (lt+mt+t1+t2) + " seconds to run on "+pFiles+" of data");
+    	println("it took " + (lt+mt+t1+t2) + " seconds to run on "+nFiles+"/1131 files");
     	//tic;
     	// save results
     	//println("saving results...")
@@ -283,7 +284,7 @@ class QueryWord2vec {
     	outSentMat = outSentMat(bestIndex);
     	var results = ""
     	for(i <-0 until top+1){
-    		println(outResFMat(i).toString+'\t'+outSentMat(i)+'\t'+outURLsSMat(i))
+    		//println(outResFMat(i).toString+'\t'+outSentMat(i)+'\t'+outURLsSMat(i))
     		results += outResFMat(i).toString+'\t'+outSentMat(i)+'\t'+outURLsSMat(i)+"\n"
     		//out1.println(outResFMat(i).toString+'\t'+outSentMat(i)+'\t'+outSentsSMat(i)+'\t'+currentTime+'\t'+outURLsSMat(i));
     	}
