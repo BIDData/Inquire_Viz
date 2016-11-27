@@ -6,6 +6,7 @@
     var control=d3.select("body").append("div")
                 .attr("style","position:absolute;left:10px;top:0%;height:100%; width: 25%")
     var initialValues
+    var monitor = {}
     
     function displayName(s)
      {
@@ -69,9 +70,9 @@
     }
 
     function selectMetric(d,i) {
-
+        var c=Canvas(d,"scalar",null)
+        monitor[d] = c
     }
-
 
     v.init=function(wsobjs)
     {
@@ -83,6 +84,15 @@
             createMenu(meta.metrics,"MetricList","Select a Metric",selectMetric)
         })
     }
+    
+    v.update=function(data) {
+        if (data.type == "data"){
+            for(var i=0;i<data.data.length;i++)
+                if (data.data[i].name in monitor)
+                    monitor[data.data[i].name].update({"data":d3.mean(data.data[i].data)})
+        }
+    }
+    
     exports.view = v
 })(this)
 

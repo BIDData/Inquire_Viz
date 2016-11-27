@@ -18,8 +18,6 @@
 			 var data=JSON.parse(msg.data)
 			 if (data.type=="data")
 				 view.update(data)
-			 if (data.type=="No engine")
-				 console.log("No engine")
 		 }
 	 }
  }

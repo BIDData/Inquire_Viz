@@ -71,7 +71,8 @@
     			}
     			
     		});
-	        chart.toggle(names)
+    		if (names.length > 5)
+	            chart.toggle(names)
         }
 
         return {
@@ -91,7 +92,7 @@
     			   	length: 1,
     			  	duration: 0 
 		        })
-            }    
+            }
         }
     }
     
