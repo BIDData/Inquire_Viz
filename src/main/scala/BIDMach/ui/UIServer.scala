@@ -99,9 +99,6 @@ object UIServer {
     }
     
     def main(args: Array[String]) {
-        Mat.checkMKL
-        Mat.checkCUDA
-        Mat.useCache = true
         val (nn,opts) = KMeans.learner(rand(100,1000))
         opts.logFuncs = Array(Logging.loss(nn),Logging.test)
         opts.npasses = 10000
