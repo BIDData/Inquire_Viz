@@ -18,7 +18,7 @@ import BIDMach.ui.LocalWebServer
 
 class InquireServer extends LocalWebServer{
     
-    val q = new QueryWord2vec
+    val q = VecQuery
 
     override def routes = {
         case GET(p"/")=>
@@ -26,11 +26,18 @@ class InquireServer extends LocalWebServer{
         case GET(p"/query" ? q_o"data=$data" & q_o"nFiles=$nFiles") => Action {
             val d = data.getOrElse("")
             val n = nFiles.getOrElse("10").toInt
-            q.nFiles = n
+//            q.nFiles = n
             println("Running query " + d +" with " + n + "files")
-            Results.Ok(JsObject(Seq(                
-                "type" -> JsString("result"),
-                "data" -> JsString(q.query(d,20)))))
+            val (scores,sents,moods,urls) = q.query(d,20)
+            Results.Ok(Json.obj(
+                "result_count" -> scores.length,
+                "query" -> d,
+                "query_results" -> Json.arr(sents.map(JsString(_))),
+                "cosine_similarity" -> scores,
+                "emotion" -> Json.arr(moods.map(JsString(_))),
+                "url" -> Json.arr(urls.map(JsString(_))),
+                "type" -> "result",
+                "data" -> "Test"))
         }
         case GET(p"/$file*")=>
           controllers.Assets.at(path="/inquire/frontend", file=file)
