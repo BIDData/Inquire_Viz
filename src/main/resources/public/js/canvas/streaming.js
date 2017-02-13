@@ -6,6 +6,7 @@
     exports.Streaming=function(div,W,H,names)
     {
         //Construction/private function and private variables here
+        
         //name = name || "data"
         var //margin = {top: 10, right: 10, bottom: 20, left: 50},
             margin = {top: 10, right: 10, bottom: 10, left: 10},
@@ -71,7 +72,8 @@
     			}
     			
     		});
-	        chart.toggle(names)
+    		if (names.length > 5)
+	            chart.toggle(names)
         }
 
         return {
@@ -91,7 +93,7 @@
     			   	length: 1,
     			  	duration: 0 
 		        })
-            }    
+            }
         }
     }
     
