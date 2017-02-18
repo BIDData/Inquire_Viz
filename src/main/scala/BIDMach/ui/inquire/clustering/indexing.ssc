@@ -1,0 +1,70 @@
+:silent
+Mat.useCache = true
+val dir = "/data/livejournal/indexing/"
+val mm = GMat(loadFMat(dir+"centers.fmat.lz4"));
+val mmnorm = mm dotr mm
+val mdir = "/data/livejournal/preds_newtrainfinalfull/"
+val o = new FileSource.Options
+o.fnames = List(FileSource.simpleEnum(mdir+"pred%04d.fmat.lz4",1,0))
+o.batchSize = 128000
+o.nend = 3742
+val ds = new FileSource(o)
+ds.init
+
+val dim = mm.ncols
+val clusterNum = 1000
+val cur = new Array[Int](clusterNum)
+val fileNum = new Array[Int](clusterNum)
+val fileSize = 12800
+val mats = new Array[FMat](clusterNum)
+val ids = new Array[IMat](clusterNum)
+for(i<-0 until clusterNum) {
+    mats(i) = FMat(dim,fileSize)
+    ids(i) = IMat(2, fileSize)
+}
+var fileId = 0
+var col = 0
+var limit = -1
+var count = 0
+flip
+while (ds.hasNext) {
+    count += 1
+    if (count % 30 == 0)
+        println("%d out of %d finished" format (count,o.nend))
+    val d = ds.next
+    val data = d(0)
+    val dis = mm * data //-2 * mm * data + mmnorm + snorm(data) 
+    val id = dis>=maxi(dis)
+    val (i,j) = find2(FMat(id))
+    //println(i.nrows,data.ncols)
+    //assert(i.nrows == data.ncols)
+    var k = 0
+    while (k<i.nrows) {
+        while (k<i.nrows-1 && j(k) == j(k+1)) k += 1
+        val t = i(k)
+        mats(t)(?,cur(t)) = data(?,j(k))
+        ids(t)(0,cur(t)) = fileId
+        ids(t)(1,cur(t)) = col
+        cur(t) += 1
+        if (cur(t) == fileSize){
+            saveFMat(dir+("cluster_%d_%d.fmat.lz4" format (t,fileNum(t))),mats(t))
+            saveIMat(dir+("cluster_%d_%d.imat.lz4" format (t,fileNum(t))),ids(t))
+            fileNum(t) += 1
+            cur(t) = 0
+        }
+        if (col == 0){
+            while (!(new java.io.File("/data/livejournal/srcdst/src%04d.smat.lz4" format fileId).exists)) fileId += 1
+            limit = loadSMat("/data/livejournal/srcdst/src%04d.smat.lz4" format fileId).ncols
+        } 
+        col += 1 
+        if (col == limit) {
+            fileId += 1
+            col = 0
+        }
+        k += 1
+    }
+}
+flop
+println("Averaging file num: %.1f" format (fileNum.sum/clusterNum))
+println("Max file num: %d" format fileNum.max)
+:silent
