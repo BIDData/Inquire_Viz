@@ -1,0 +1,41 @@
+Mat.useCache = true
+:silent
+val dir = "/data/livejournal/indexing/"
+val mdir = "/data/livejournal/preds_newtrainfinalfull/"
+val mm = GMat(loadFMat(dir+"centers.fmat.lz4"));
+val mmnorm = mm dotr mm
+val o = new FileSource.Options
+o.fnames = List(FileSource.simpleEnum(mdir+"pred%04d.fmat.lz4",1,0))
+o.batchSize = 128000
+val faction = 50
+o.nend = 3742 / faction
+val ds = new FileSource(o)
+ds.init
+
+val dim = mm.ncols
+val clusterNum = mm.nrows
+val cur = new Array[Int](clusterNum)
+var count = 0
+flip
+while (ds.hasNext) {
+    count += 1
+    if (count % 30 == 0)
+        println("%d out of %d finished. %.3fs passed" format (count,o.nend,flop._2))
+    val d = ds.next
+    val data = d(0)
+    val dis = mm * data //-2 * mm * data + mmnorm + snorm(data) 
+    val id = dis>=maxi(dis)
+    val (i,j) = find2(FMat(id))
+    var k = 0
+    while (k<i.nrows) {
+        val t = i(k)
+        cur(t) += 1
+        k += 1
+    }
+}
+val fileNum = cur.map(_/(12800 /faction))
+:silent
+flop
+println("Max count: %d" format fileNum.max)
+println("%d clusters have less than 40 files" format fileNum.filter(_<40).length)
+println("%d clusters have less than 10 files" format fileNum.filter(_<10).length)

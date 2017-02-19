@@ -1,0 +1,96 @@
+/*
+Requires loading embed.ssc first
+Need its genVec function
+*/
+
+import scala.collection.mutable.ListBuffer
+:silent
+val dir = "/data/livejournal/"
+//val edir = dir + "preds_new2/"
+val edir = dir + "preds_newtrainfinalfull/"
+//val edir = "/home/byeah/livejournal/preds/"
+val w = loadSBMat(dir + "sentences/masterDict.sbmat")
+val cs = CSMat(w)
+Mat.useCache = true
+val nFiles = 374//41 //Max 332 for now
+
+def getSFDS(filename:String) = {
+    val opts = new SFileSource.Options
+    opts.fnames = List(FileSource.simpleEnum(filename, 1, 0))
+    opts.batchSize = 128000;
+    opts.nend = 1132
+    opts.eltsPerSample = 30  //Upper bound of the average sentence length
+    implicit val threads = threadPool(4)
+    val ds = new SFileSource(opts)
+    ds.init
+    ds
+}
+
+def getFDS(filename:String) = {
+    val opts = new FileSource.Options
+    opts.fnames = List(FileSource.simpleEnum(filename, 1, 0))
+    opts.batchSize = 128000;
+    opts.nend = nFiles
+    implicit val threads = threadPool(4)
+    val ds = new FileSource(opts)
+    ds.init
+    ds
+}
+
+def printsent(s:SMat,i:Int) = {
+    val res = cs(IMat(find3(s(?,i))._3)-1).data.reverse.reduce(_+" "+_)
+    println(res)
+    res
+}
+
+def getSent(id:SMat) = {
+    val w = cs(IMat(find3(id)._3)-1).data
+    val res = if (w.length>0) w.reverse.reduce(_+" "+_) else "@ERROR! EMPTY RESULTS"
+    res
+}
+
+val sentDS = getSFDS(dir + "srcdst/src%04d.smat.lz4");
+val emDS = getFDS(edir + "pred%04d.fmat.lz4")
+
+val sent = sentDS.next(0).asInstanceOf[SMat].copy
+val em = GMat(emDS.next(0).asInstanceOf[FMat])
+
+def queryV(v:GMat) = {
+    val len = sqrt(snorm(v))
+    println("--------RESULTS-----------")
+    sentDS.reset
+    emDS.reset
+    val res = new ListBuffer[(Float,String)]
+    while (emDS.hasNext) {
+        val sent2 = sentDS.next(0).asInstanceOf[SMat]
+        val em2 = emDS.next(0).asInstanceOf[FMat]
+        val dis = v^*em2/sqrt(snorm(em2))/len
+        //val top = IMat(sortdown2(dis.t)._2(0->10))
+        val top = IMat(sort2(dis.t)._2(0->10))
+        //top.data.foreach(printsent(sent,_))
+        top.data.foreach(i=>{
+                res += ((dis(i).dv.toFloat,getSent(sent2(?,i))))
+        })
+    }
+//    res.sortBy(_._1).reverse.take(20).foreach(println(_))
+    res.sortBy(_._1).take(20).foreach(println(_))
+}
+
+def query(i:Int) = {
+    println("QUERY: "+getSent(sent(?,i)))
+    val v = em(?,i)
+    queryV(v)
+}
+:silent
+
+def querys(s:String) = {
+    flip
+    queryV(genVec(s))
+    println("Query takes %.3fs" format flop._2)
+}
+
+
+
+
+
+

@@ -1,0 +1,70 @@
+/*
+It seems right now the SeqToSeq model only works in GPU mode
+*/
+
+import BIDMach.networks._
+:silent
+
+val dir = "/data/livejournal/"
+val mdir = "/data/livejournal/models/"
+
+val w = loadSBMat(dir + "sentences/masterDict.sbmat")
+val dict = Dict(w,irow(0->w.ncols))
+
+class Eopts extends Learner.Options with SeqToSeq.Opts with MatSource.Opts
+
+def embed(model:SeqToSeq, m:Mat):(Learner, Eopts) = {   
+    val opts = new Eopts;
+    opts.copyFrom(model.opts);
+    opts.embed = true;
+    opts.batchSize = m.ncols//min(m.ncols,128)
+    val newmod = new SeqToSeq(opts);
+    newmod.refresh = false;
+    model.copyTo(newmod);
+    implicit val threads = threadPool(4);
+    val ds = new MatSource(Array(m),opts)
+  	val nn = new Learner(
+  			ds, 
+  	    newmod, 
+  	    null,
+  	    null,
+  	    null,
+  	    opts)
+  	
+    opts.nvocab = 100000;                     // Vocabulary limit
+    opts.npasses = 1;                         // Number of passes over the dataset
+    opts.height = 2;                          // Height of the network
+    opts.dim = 256;                           // Dimension of LSTM units
+    opts.kind = 1;                            // LSTM structure
+    opts.netType = 0;                         // Net type (softmax=0, or negsampling=1)
+    opts.scoreType = 1;                       // Score type (logloss=0, accuracy=1)
+    opts.inwidth = 30;                        // Max input sentence length (truncates)
+    opts.outwidth = 30;                       // Max output sentence length (truncates)
+    opts.hasBias = true;                      // Use bias terms in linear layers
+    opts.pstep = 0.01f;                     // How often to print
+    opts.cumScore = 3;                        // Accumulate scores for less-noisy printing
+    opts.PADsym = 1;                          // The padding symbol
+    opts.OOVsym = 2;                          // The OOV symbol
+    opts.STARTsym = 0;
+    opts.autoReset=false;
+    nn.model.ogmats = Array(grand(opts.dim,opts.batchSize)*0)
+    nn.model.omats = Array(rand(opts.dim,opts.batchSize)*0)
+    (nn, opts)
+  }
+  
+def genSent(s:String) = {
+    val data = s.split(" ").map(x=>dict(x.toLowerCase)+1).filter(_>=1).reverse
+    sparse(irow(0->data.length),irow(data)*0,FMat(irow(data)))
+}
+
+//val model = SeqToSeq.load(mdir+"model256_te0.3_12/")
+//val model = SeqToSeq.load(mdir+"model256_new_final/")
+val model = SeqToSeq.load(mdir+"model256_fit/")
+
+
+def genVec(s:String) = {
+    val (nn,opts) = embed(model, genSent(s))
+    nn.predict  
+    nn.model.ogmats(0).asInstanceOf[GMat]
+}
+:silent

@@ -1,0 +1,65 @@
+/*
+Requires loading embed.ssc first
+Need its genVec function
+Please set useGPU to be false if running a machine without GPU
+*/
+
+import scala.collection.mutable.ListBuffer
+:silent
+
+val useGPU = true
+
+Mat.useCache = true
+val dir = "/data/livejournal/"
+val edir = dir + "preds_newtrainfinalfull/"
+val w = loadSBMat(dir + "sentences/masterDict.sbmat")
+val cs = CSMat(w)
+val tmp = loadFMat(dir+"indexing/centers.fmat.lz4")
+val mm = if (useGPU) GMat(tmp) else tmp
+
+val em = GMat(loadFMat(dir+"indexing/cluster_0_0.fmat.lz4")) //Sample one embedding
+
+def getSent(id:SMat) = {
+    val w = cs(IMat(find3(id)._3)-1).data
+    val res = if (w.length>0) w.reverse.reduce(_+" "+_) else "@ERROR! EMPTY RESULTS"
+    res
+}
+
+def queryV(v:GMat) = {
+    val s = FMat(mm * v)
+    val (_,rank) = sortdown2(s)
+    
+    val len = sqrt(snorm(v))
+    val res = new ListBuffer[(Float,Int,Int)]
+    println(rank.data.take(5).toList)
+    for(fileId<-rank(0 until 3).data){
+        var cur = 0
+        while (cur < 5000 && new java.io.File(dir + ("indexing/cluster_%d_%d.fmat.lz4" format (fileId,cur))).exists){
+            em <-- loadFMat(dir + ("indexing/cluster_%d_%d.fmat.lz4" format (fileId,cur)))
+            val ids = loadIMat(dir + ("indexing/cluster_%d_%d.imat.lz4" format (fileId,cur)))
+            /*val dis = v^*em/sqrt(snorm(em))/len
+            val (gn,gt) = sortdown2(dis.t)
+            val top = IMat(gt(0->20))
+            val num = FMat(gn(0->20))
+            (0 until 20).foreach(i=>{
+                res += ((num.data(i),ids(0,top(i)),ids(1,top(i))))
+            })*/
+            cur += 1
+        }
+        println("Queried #%d cluster with %d files" format (fileId,cur))
+    }
+    println("--------RESULTS-----------")
+    res.sortBy(_._1).reverse.take(20).foreach(x=>{
+        val sent = loadSMat(dir+("srcdst/src%04d.smat.lz4" format x._2))
+        println("%.6f %s" format (x._1,getSent(sent(?,x._3))))
+    })
+}
+
+:silent
+
+def querys(s:String) = {
+    flip
+    queryV(genVec(s))
+    println("Query takes %.3fs" format flop._2)
+}
+

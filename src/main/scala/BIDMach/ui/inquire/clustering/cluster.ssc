@@ -1,0 +1,16 @@
+val mdir = "/data/livejournal/preds_newtrainfinalfull/"
+
+
+val (nn,opt) = KMeans.learner(mdir+"pred%04d.fmat.lz4")
+//val (nn,opt) = learner(mdir+"pred%04d.fmat.lz4")
+opt.dim = 5000
+opt.nend = 374
+opt.autoReset=false
+opt.npasses = 5
+opt.batchSize =128000
+//opt.npass
+nn.train
+
+val m = nn.model.modelmats(0)
+
+saveFMat("/data/livejournal/indexing/centers1w.fmat.lz4",FMat(m))
