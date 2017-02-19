@@ -8,7 +8,14 @@ import play.api.mvc._
 import play.core.server.{ServerConfig, NettyServer}
 import play.api.mvc._
 import play.api.libs.json._
+import play.api.libs.ws._
+import play.api.libs.ws.ning.NingWSClient   
+import play.api.Play.current
+import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
 import BIDMach.ui.LocalWebServer
+    
 
 
 /**
@@ -19,7 +26,8 @@ import BIDMach.ui.LocalWebServer
 class InquireServer extends LocalWebServer{
     
     val q = VecQuery
-
+    var wsClient: NingWSClient = null
+        
     override def routes = {
         case GET(p"/")=>
           controllers.Assets.at(path="/inquire/frontend", file="index.html")
@@ -28,7 +36,7 @@ class InquireServer extends LocalWebServer{
             val n = nFiles.getOrElse("10").toInt
 //            q.nFiles = n
             println("Running query " + d +" with " + n + "files")
-            val (scores,sents,moods,urls) = q.query(d,20)
+            val (scores,sents,moods,urls) = q.query(d,100)
             Results.Ok(Json.obj(
                 "result_count" -> scores.length,
                 "query" -> d,
@@ -37,8 +45,22 @@ class InquireServer extends LocalWebServer{
                 "emotion" -> Json.arr(moods.map(JsString(_))),
                 "url" -> Json.arr(urls.map(JsString(_))),
                 "type" -> "result",
-                "data" -> "Test"))
+                "data" -> sents.mkString("\n")))
         }
+        case GET(p"/test2") => Action{
+            Results.Ok(s"test2")
+        }
+        case POST(p"/api/visualize/epsilon") => Action.async{ implicit request => {
+               if (wsClient == null) wsClient = NingWSClient()
+               println(request.body.asJson.toString)
+               wsClient.url("http://localhost:8080/api/visualize/epsilon")
+                   .withHeaders("Content-Type" -> "application/json")
+                   .post(request.body.asJson.getOrElse(Json.obj()).toString)
+                   .map { response =>
+                        Results.Ok(response.body)
+                   }            
+            }                                                
+        }                                          
         case GET(p"/$file*")=>
           controllers.Assets.at(path="/inquire/frontend", file=file)
     }
