@@ -1,0 +1,586 @@
+ {
+    "name": "Mood",
+    "parent": "null",
+    "children": [
+      {
+        "name": "angry",
+        "parent": "Mood",
+        "children": [
+          {
+            "name": "aggravated",
+            "parent": "angry"
+          },
+          {
+            "name": "annoyed",
+            "parent": "angry"
+          },
+          {
+            "name": "bitchy",
+            "parent": "angry"
+          },
+          {
+            "name": "cranky",
+            "parent": "angry"
+          },
+          {
+            "name": "cynical",
+            "parent": "angry"
+          },
+          {
+            "name": "enraged",
+            "parent": "angry"
+          },
+          {
+            "name": "frustrated",
+            "parent": "angry"
+          },
+          {
+            "name": "grumpy",
+            "parent": "angry"
+          },
+          {
+            "name": "infuriated",
+            "parent": "angry"
+          },
+          {
+            "name": "irate",
+            "parent": "angry"
+          },
+          {
+            "name": "irritated",
+            "parent": "angry"
+          },
+          {
+            "name": "moody",
+            "parent": "angry"
+          },
+          {
+            "name": "pissed off",
+            "parent": "angry"
+          },
+          {
+            "name": "stressed",
+            "parent": "angry",
+            "children": [
+	          {
+	            "name": "rushed",
+	            "parent": "stressed"
+	          }
+	         ]
+          }
+        ]
+      },
+      {
+        "name": "awake",
+        "parent": "Mood"
+      }, 
+      {
+        "name": "confused",
+        "parent": "Mood",
+        "children": [
+	         {
+	        	"name": "curious",
+	            "parent": "confused"
+	          }
+	        ]
+      },
+      {
+        "name": "determined",
+        "parent": "Mood",
+        "children": [
+	         {
+	        	"name": "predatory",
+	            "parent": "determined"
+	          }
+	        ]
+      },
+      {
+        "name": "devious",
+        "parent": "Mood"
+      }, 
+      {
+        "name": "energetic",
+        "parent": "Mood",
+        "children": [
+	         {
+	        	"name": "bouncy",
+	            "parent": "energetic"
+	          },
+	          {
+	        	"name": "hyper",
+	            "parent": "energetic"
+	          }
+	        ]
+      },
+      {
+        "name": "enthralled",
+        "parent": "Mood"
+      }, 
+      {
+        "name": "happy",
+        "parent": "Mood",
+        "children": [
+	         {
+	        	"name": "amused",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "cheerful",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "chipper",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "ecstatic",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "excited",
+	            "parent": "happy",
+	            "children": [
+		         {
+		        	"name": "high",
+		            "parent": "excited"
+		          },
+		          {
+		        	"name": "horny",
+		            "parent": "excited"
+		          }
+	        ]
+	          },
+	          {
+	        	"name": "good",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "grateful",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "impressed",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "jubilant",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "loved",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "optimistic",
+	            "parent": "happy",
+	            "children": [
+		         {
+		        	"name": "hopeful",
+		            "parent": "optimistic"
+		          }
+		          ]
+	          },
+	          {
+	        	"name": "pleased",
+	            "parent": "happy"
+	          },
+	          {
+	        	"name": "refreshed",
+	            "parent": "happy",
+	            "children": [
+		         {
+		        	"name": "rejuvenated",
+		            "parent": "refreshed"
+		          }
+		          ]
+	          },
+	          {
+	        	"name": "relaxed",
+	            "parent": "happy",
+	            "children": [
+		         {
+		        	"name": "calm",
+		            "parent": "relaxed"
+		          },
+		          {
+		        	"name": "mellow",
+		            "parent": "relaxed"
+		          },
+		          {
+		        	"name": "peaceful",
+		            "parent": "relaxed"
+		          },
+		          {
+		        	"name": "recumbent",
+		            "parent": "relaxed"
+		          },
+		          {
+		        	"name": "satisfied",
+		            "parent": "relaxed",
+		            "children": [
+			         {
+			        	"name": "content",
+			            "parent": "satisfied",
+			            "children": [
+				         {
+				        	"name": "complacent",
+				            "parent": "content"
+				          },
+				          {
+				        	"name": "indifferent",
+				            "parent": "content"
+				         }
+				         ]
+				        },
+			        {
+			        	"name": "full",
+			            "parent": "satisfied"
+			          },
+			          {
+			        	"name": "relieved",
+			            "parent": "satisfied"
+			          }
+		          	]
+		          	}
+		          ]
+	          },
+	          {
+		        	"name": "silly",
+		            "parent": "happy",
+		            "children": [
+		            {
+				        	"name": "crazy",
+				            "parent": "silly"
+				          },
+				          {
+				        	"name": "ditzy",
+				            "parent": "silly"
+				         },
+				         {
+				        	"name": "flirty",
+				            "parent": "silly"
+				         },
+				         {
+				        	"name": "giddy",
+				            "parent": "silly"
+				         },
+				         {
+				        	"name": "giggly",
+				            "parent": "silly"
+				         },
+				         {
+				        	"name": "mischievous",
+				            "parent": "silly",
+				            "children": [
+				            {
+				        	"name": "naughty",
+				            "parent": "mischievous"
+				         	},
+				            ]
+				         },
+				         {
+				        	"name": "quixotic",
+				            "parent": "silly"
+				         },
+				         {
+				        	"name": "weird",
+				            "parent": "silly"
+				         }
+		            ] 
+		          },
+		          {
+		        	"name": "thankful",
+		            "parent": "happy"
+		          },
+		          {
+		        	"name": "touched",
+		            "parent": "happy"
+		          }
+	        ]
+      },
+      {
+    	"name": "indescribable",
+        "parent": "Mood"
+      },
+      {
+    	"name": "nerdy",
+        "parent": "Mood",
+        "children": [
+        	{
+		    	"name": "dorky",
+		        "parent": "nerdy"
+		      },
+		      {
+		    	"name": "geeky",
+		        "parent": "nerdy"
+		      },
+        ]
+      },
+      {
+    	"name": "okay",
+        "parent": "Mood",
+        "children": [
+        	{
+		    	"name": "blah",
+		        "parent": "okay"
+		      },
+		      {
+		    	"name": "lazy",
+		        "parent": "okay",
+		        "children": [
+		        {
+			    	"name": "exanimate",
+			        "parent": "lazy",
+			        "children": [
+		        		{
+					    	"name": "apatheic",
+					        "parent": "exanimate"
+					      },
+					      {
+					    	"name": "blank",
+					        "parent": "exanimate"
+					      },
+		        ]
+			      },
+			       {
+			    	"name": "lethargic",
+			        "parent": "lazy"
+			      },
+			       {
+			    	"name": "listless",
+			        "parent": "lazy"
+			      }
+		        ]
+		      }
+        ]
+      },
+      {
+    	"name": "sad",
+        "parent": "Mood",
+	            "children": [
+        {
+	        	"name": "bored",
+	            "parent": "sad"
+	          },
+	          {
+	        	"name": "crappy",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "crushed",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "depressed",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "disappointed",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "discontent",
+	            "parent": "sad",
+	            "children": [
+	            {
+	        	"name": "envious",
+	            "parent": "discontent"
+	         	},
+	            ]
+	         },
+	         {
+	        	"name": "gloomy",
+	            "parent": "sad",
+	            "children": [
+	            {
+	        	"name": "pessimistic",
+	            "parent": "gloomy"
+	         	},
+	            ]
+	         },
+	         {
+	        	"name": "jealous",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "jealous",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "lonely",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "melancholy",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "morose",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "numb",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "rejected",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "sympathetic",
+	            "parent": "sad"
+	         },
+	         {
+	        	"name": "uncomfortable",
+	            "parent": "sad",
+	             "children": [
+	            {
+	        	"name": "cold",
+	            "parent": "uncomfortable"
+	         	},
+	         	{
+	        	"name": "dirty",
+	            "parent": "uncomfortable"
+	         	},
+	         	{
+	        	"name": "drunk",
+	            "parent": "uncomfortable"
+	         	},
+	         	{
+	        	"name": "exhausted",
+	            "parent": "uncomfortable",
+	            "children": [
+		            {
+		        	"name": "drained",
+		            "parent": "exhausted"
+		         	},
+		         	{
+		        	"name": "tired",
+		            "parent": "exhausted",
+		            "children": [
+			            {
+			        	"name": "groggy",
+			            "parent": "tired"
+			         	},
+			         	{
+			        	"name": "sleepy",
+			            "parent": "tired"
+			         	}
+			            ]
+		         	}
+		            ]
+	         	},
+	         	{
+	        	"name": "guilty",
+	            "parent": "uncomfortable"
+	         	},
+	         	{
+	        	"name": "hot",
+	            "parent": "uncomfortable"
+	         	},
+	         	{
+	        	"name": "hungry",
+	            "parent": "uncomfortable"
+	         	},
+	         	{
+	        	"name": "restless",
+	            "parent": "uncomfortable"
+	         	},
+	         	{
+	        	"name": "sick",
+	            "parent": "uncomfortable",
+	            "children": [
+		            {
+		        	"name": "nauseated",
+		            "parent": "sick"
+		         	}
+		            ]
+	         	},
+	         	{
+	        	"name": "sore",
+	            "parent": "uncomfortable"
+	         	},
+	         	{
+	        	"name": "thirsty",
+	            "parent": "uncomfortable"
+	         	}
+	            ]
+	         },
+	         {
+	        	"name": "worried",
+	            "parent": "sad"
+	         }
+		 ] 
+      },
+	  {
+    	"name": "scared",
+        "parent": "Mood",
+        "children": [
+        	         	{
+	        	"name": "anxious",
+	            "parent": "scared",
+	            "children": [
+		            {
+		        	"name": "distressed",
+		            "parent": "anxious"
+		         	}
+		            ]
+	         	},
+	         	{
+	        	"name": "embarassed",
+	            "parent": "scared"
+	         	},
+	         	{
+	        	"name": "intimidated",
+	            "parent": "scared"
+	         	},
+	         	{
+	        	"name": "nervous",
+	            "parent": "scared"
+	         	}
+	            ]
+      },
+      	  {
+    	"name": "thoughtful",
+        "parent": "Mood",
+                    "children": [
+		            {
+		        	"name": "contemplative",
+		            "parent": "thoughtful"
+		         	},
+		         	{
+		        	"name": "nostalgic",
+		            "parent": "thoughtful"
+		         	},
+		         	{
+		        	"name": "pensive",
+		            "parent": "thoughtful"
+		         	}
+	            ]
+      },
+      	  {
+    	"name": "working",
+        "parent": "Mood",
+                            "children": [
+		            {
+		        	"name": "accomplished",
+		            "parent": "working"
+		         	},
+		         	{
+		        	"name": "artistic",
+		            "parent": "working"
+		         	},
+		         	{
+		        	"name": "busy",
+		            "parent": "working"
+		         	},
+		         	    {
+		        	"name": "creative",
+		            "parent": "working"
+		         	},
+		         	{
+		        	"name": "productive",
+		            "parent": "working"
+		         	}
+	            ]
+      }

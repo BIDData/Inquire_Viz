@@ -48,7 +48,7 @@
 
 .logoAndSearchContainer {
     display: flex;
-    position: fixed;
+    position: absolute;
     margin-top: 20px;
     margin-left: 20px;
 }
@@ -59,11 +59,61 @@
 }
 
 .filterContainer {
-    margin-top: 50px;
-    margin-left: 50px;
+    padding-left: 200px;
+    padding-top: 50px;
 }
 
 .menuoption {
-    margin-top: 70px;
+    margin-top: 150px;
     margin-left: 20px;
+}
+
+.legend {
+    border: 1px solid #555555;
+    border-radius: 5px 5px 5px 5px;
+    font-size: 0.8em;
+    margin: 10px;
+    padding: 8px;
+}
+.bld {
+    font-weight: bold;
+}
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.queryFilters {
+    display: flex;
+    margin-left: 150px;
+    position: absolute;
+    margin-top: 81px;
+}
+
+.bar{
+fill: steelblue;
+}
+
+.bar:hover{
+fill: brown;
+}
+
+.axis {
+font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+fill: none;
+stroke: #000;
+shape-rendering: crispEdges;
+}
+
+table {
+    margin-top: 100px;
+    margin-left: 75px;
 }

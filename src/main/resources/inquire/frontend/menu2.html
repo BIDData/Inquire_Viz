@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+    <title>Inquire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>           
+    <script type="text/javascript" src="sunburstVisual.js"></script>
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="d3.layout.cloud.js"></script>
+    <style>
+
+     <!-- Load c3.css -->
+     <link href="./css/c3.css" rel="stylesheet" type="text/css">
+     <!-- Load d3.js and c3.js -->
+     <script src="https://d3js.org/d3.v4.js"></script>
+     <script src="./js/c3.min.js"></script>
+
+     .city {display:none;}
+    </style>
+    <body>
+
+        <div class="main">
+            <div class="logoAndSearchContainer">
+                <div class="logo">
+                    <img src="./img/inquire.png">
+                </div>
+                <div id="custom-search-input">
+                    <div class="input-group col-md-12">
+                        <input type="text" class="form-control input-lg" placeholder="Search" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-info btn-lg" type="button"
+                                    onclick="showResults(event)">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+            
+            <div class="resultsContainer">
+                <div class="sidemenu">
+                    <nav class="w3-sidenav w3-light-grey w3-card-2" style="width:130px">
+                        <div class="w3-container">
+                            <h3>Inquire</h3>
+                        </div>
+                        <a href="javascript:void(0)" id="QueriesButton" class="tablink" onclick="openTab(event, 'Queries')">Queries</a>
+                        <a href="javascript:void(0)" id="MapButton" class="tablink" onclick="openTab(event, 'Map')">Road Map of Queries</a>
+                        <a href="javascript:void(0)" id="VisualButton" class="tablink" onclick="openTab(event, 'Visual')">Visualization</a>
+                        <a href="javascript:void(0)" id="SunburstButton" class="tablink" onclick="openTab(event, 'Sunburst')">Sunburst</a>
+                    </nav>
+                </div>
+
+
+
+
+
+                <div style="margin-left:130px; width:50%">
+
+
+                    <div id="Queries" class="w3-container city menuoption" style="display:none;">
+                        <h2>Results</h2>
+                        
+                    </div>
+
+                    <div id="Map" class="w3-container city menuoption" style="display:none;">
+                        <h2>Road Map of Queries</h2>
+                    </div>
+
+                    <div id="Visual" class="w3-container city menuoption" style="display:none;">
+                        <h2>Visualizations</h2>
+                        <div id="userContributions" style="width: 100%; height: 100%;" class="plotly-graph-div"></div>
+                        <div id="polarity" style="width: 100%; height: 100%;" class="plotly-graph-div"></div>
+                        <div id="polarityHist" style="width: 100%; height: 100%;" class="plotly-graph-div"></div>
+                        <div id="histogram" style="width: 100%; height: 100%;" class="plotly-graph-div"></div>
+                    </div>
+                    
+                    <div id="Sunburst" class="w3-container city menuoption" style="display:none;">
+                        <div id="chart"></div>
+                    </div>
+                    
+                    <!--     <div id="Cloud" class="w3-container city menuoption" style="display:none;">
+                         <script>
+                         function readTextFile(file, callback) {
+                         var rawFile = new XMLHttpRequest();
+                         rawFile.overrideMimeType("application/json");
+                         rawFile.open("GET", file, true);
+                         rawFile.onreadystatechange = function() {
+                         if (rawFile.readyState === 4 && rawFile.status == "200") {
+                         callback(rawFile.responseText);
+                         }
+                         }
+                         rawFile.send(null);
+                         }
+                         //usage:
+                         readTextFile("wordcloud.json", function(text){
+                         frequency_list = JSON.parse(text);
+                         console.log(frequency_list);
+                         var color = d3.scale.linear()
+                         .domain([0,1,2,3,4,5,6,10,15,20,100])
+                         .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
+                         d3.layout.cloud().size([800, 300])
+                         .words(frequency_list)
+                         .rotate(0)
+                         .fontSize(function(d) { return d.size; })
+                         .on("end", draw)
+                         .start();
+                         function draw(words) {
+                         d3.select("body").append("svg")
+                         .attr("width", 850)
+                         .attr("height", 350)
+                         .attr("class", "wordcloud")
+                         .append("g")
+                         // without the transform, words words would get cutoff to the left and top, they would
+                         // appear outside of the SVG area
+                         .attr("transform", "translate(320,200)")
+                         .selectAll("text")
+                         .data(words)
+                         .enter().append("text")
+                         .style("font-size", function(d) { return d.size + "px"; })
+                         .style("fill", function(d, i) { return color(i); })
+                         .attr("transform", function(d) {
+                         return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                         })
+                         .text(function(d) { return d.text; });
+                         }
+                         });
+                         </script> -->
+
+                    <!-- <div id="trial" style="width: 40%;">
+                         <div class="legend">
+                         Commonly used words are larger and slightly faded in color.  Less common words are smaller and darker.
+                         </div>
+
+                         </div> -->
+                    
+                    <!--       </div> -->
+
+                    <div class="filterContainer" id="Filter" style="display:none;">
+                        <h5>Filters</h5>
+                        <div class="filterSection">
+                            <!-- <div class="option">
+                                 <input checked="true" type="checkbox" value="food"/>
+                                 <label>Diversity</label>
+                                 </div>
+                                 <div class="option">
+                                 <input checked="true" type="checkbox" value="place"/>
+                                 <label>Complement</label>
+                                 </div>
+                                 <div class="option">
+                                 <input checked="true" type="checkbox" value="musician"/>
+                                 <label>Randomized Data</label>
+                                 </div> -->
+                            <div class="input-group col-md-12">
+                                <span>Number of results</span>
+                                <input id="topn" type="text" class="form-control input-md" value="100"
+                                       placeholder="" />
+                            </div>
+
+                            <div class="input-group col-md-12">
+                                <span>Min words</span>
+                                <input id="minWords" type="text" class="form-control input-md" value="5"
+                                       placeholder="" />
+                            </div>
+                            <div class="input-group col-md-12">
+                                <span>Max words</span>
+                                <input id="maxWords" type="text" class="form-control input-md" value="100"
+                                       placeholder="" />
+                            </div>
+                            <div class="input-group col-md-12">
+                                <span>Filter words</span>
+                                <input id="filterWords" type="text" class="form-control input-md" value=""
+                                       placeholder="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                 function openTab(evt, id) {
+                     var i, x, tablinks;
+                     x = document.getElementsByClassName("city");
+                     for (i = 0; i < x.length; i++) {
+                         x[i].style.display = "none";
+                     }
+                     tablinks = document.getElementsByClassName("tablink");
+                     for (i = 0; i < x.length; i++) {
+                         tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+                     }
+                     document.getElementById(id).style.display = "block";
+                     document.getElementById(id + 'Button').className += " w3-red";
+                     document.getElementById('Filter').style.display = "block";
+                 }
+                 
+                 function resizePlot() {
+                     var bb = gd.getBoundingClientRect();
+                     Plotly.relayout(gd, {
+                         width: bb.width,
+                         height: bb.height
+                     });
+                 }
+
+                 var d;
+
+                 function displayEmotionVisuals() {
+                     var x = d.emotion[0];
+                     var data = [
+                         {
+                             x: x,
+                             type: 'histogram',
+                             marker: {
+                                 color: 'rgba(100,250,100,0.7)',
+                             },
+                         }
+                     ];
+                     var layout = {
+                         "autosize": false, 
+                         "title": "User-generated emotions in results"
+                     };
+                     Plotly.newPlot('histogram', data, layout);
+                 }
+
+                 function displayUserContributions() {
+                     var urls = d["url"][0];
+                     var usernames = urls.map(function(str){return str.substring(7, str.length).split(".")[0]});
+                     var x = usernames;
+                     var data = [
+                         {
+                             x: x,
+                             type: 'histogram',
+                             marker: {
+                                 color: 'rgba(100,250,100,0.7)',
+                             },
+                         }
+                     ];
+                     var layout = {
+                         "autosize": false, 
+                         "title": "User contributions in results"
+                     };
+                     Plotly.newPlot('userContributions', data, layout);
+                 }
+                 
+                 function displayPolarity() {
+                     var len = d["result_count"];
+                     var fake_polarity = 
+                     Array.apply(null, {length: d["result_count"]}).map(Function.call, Math.random);
+                     var trace1 = {
+                         x: Array.apply(null, {length: len}).map(Number.call, Number), 
+                         y: d["cosine_similarity"], 
+                         type: 'scatter'
+                     };
+
+                     var trace2 = {
+                         x: Array.apply(null, {length: len}).map(Number.call, Number), 
+                         y: fake_polarity, 
+                         type: 'bar'
+                     };
+                     var layout = {
+                         "autosize": false, 
+                         "title": "Similarity versus sentiment polarity"
+                     };
+
+                     var data = [trace1, trace2];
+
+                     Plotly.newPlot('polarity', data, layout);
+                 }
+
+                 function displayPolarityHist() {
+                     var x = 
+                     Array.apply(null, {length: d["result_count"]}).map(Function.call, Math.random);
+                     var data = [
+                         {
+                             x: x,
+                             type: 'histogram',
+                             histnorm: 'probability',
+                             marker: {
+                                 color: 'rgb(255,255,100)',
+                             },
+                         }
+                     ];
+                     var layout = {
+                         "autosize": false, 
+                         "title": "Polarity (normalized)"
+                     };
+                     Plotly.newPlot('polarityHist', data, layout);
+                 }
+
+                 function showResults(evt) {
+                     // document.getElementById('Queries').style.display = "block";
+                     document.getElementById('Filter').style.display = "block";
+
+                     var query = d3.select("input").node().value
+                     var minWords = d3.select("#minWords").node().value
+                     var maxWords = d3.select("#maxWords").node().value
+                     var filterWords = d3.select("#filterWords").node().value
+                     var topN = d3.select("#topn").node().value
+                     
+                     d3.select("#Queries").attr("style","display:block")
+                         d3.select("#Queries").selectAll("p").remove()
+                         d3.select("#Queries").selectAll("br").remove()
+                         d3.select("#Queries").append("p").text("Loading...")
+                         d3.json("http://localhost:9000/query?data="+query + "&minWords=" + minWords + "&maxWords=" + maxWords + "&filter=" + filterWords + "&top=" + topN,function(res){
+                             d = res;
+                             var arr = d.data.split("\n");
+                             d3.select("#Queries").selectAll("p").remove()
+                                 d3.select("#Queries").selectAll("p").data(arr).enter()
+                               .append("p").text(function(d){return d})
+                                 displayUserContributions();
+                             displayPolarity();
+                             displayEmotionVisuals();
+                             displayPolarityHist();
+                             createSunburst();
+                         });
+                 }
+                </script>
+
+
+
+    </body>
+</html>
