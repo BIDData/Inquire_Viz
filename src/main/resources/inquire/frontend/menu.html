@@ -8,337 +8,102 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
 <script src="jLouvain.js"></script>
-<script type="text/javascript" src="sunburstVisual.js"></script>
 <script type="text/javascript" src="nodeGraphVisual.js"></script>
-<script type="text/javascript" src="userHist.js"></script>
 <script src="d3.layout.cloud.js"></script>
+<!--script type="text/javascript" src="jquery-3.1.1.min.js"></script-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="launch.js"></script>
+    
+<!-- Load d3.js and c3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="./js/c3.min.js"></script>
+    
 <style>
 
 <!-- Load c3.css -->
 <link href="./css/c3.css" rel="stylesheet" type="text/css">
-<!-- Load d3.js and c3.js -->
-<script src="https://d3js.org/d3.v4.js"></script>
-<script src="./js/c3.min.js"></script>
-
 .city {display:none;}
 </style>
 <body>
 
-<div class="main">
-  <div class="logoAndSearchContainer">
-    <div class="logo">
-      <img src="./img/inquire.png">
-    </div>
-    <div id="custom-search-input">
-        <div class="input-group col-md-12">
-            <input type="text" class="form-control input-lg" placeholder="Search" />
-            <span class="input-group-btn">
-                <button class="btn btn-info btn-lg" type="button" onclick="openTab(event, 'Queries');showResults(event)">
-                    <i class="glyphicon glyphicon-search"></i>
-                </button>
-            </span>
+    <div class="main">
+      <div class="logoAndSearchContainer">
+        <div class="logo">
+          <img src="./img/inquire.png">
         </div>
-    </div>
-  </div>
-    
-    <div class="queryFilters">
-        <div class="input-group" style="width:120px;">
-            <span>Number of results</span>
-            <input id="topn" type="text" class="form-control input-md" value="100"
-                   placeholder="" />
+        <div id="custom-search-input">
+            <div class="input-group col-md-12">
+                <input id="textboxId" type="text" class="form-control input-lg" placeholder="Search" onkeydown="if (event.keyCode == 13) document.getElementById('searchButton').click()" />
+                <span class="input-group-btn">
+                    <button id="searchButton" class="btn btn-info btn-lg" type="button" onclick="openTab(event, 'Queries');showResults(event)">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </span>
+            </div>
         </div>
-
-        <div class="input-group" style="width:80px;">
-            <span>Min words</span>
-            <input id="minWords" type="text" class="form-control input-md" value="5"
-                   placeholder="" />
-        </div>
-        <div class="input-group" style="width:80px;">
-            <span>Max words</span>
-            <input id="maxWords" type="text" class="form-control input-md" value="100"
-                   placeholder="" />
-        </div>
-        <div class="input-group" style="width:355px;">
-            <span>Filter words</span>
-            <input id="filterWords" type="text" class="form-control input-md" value=""
-                   placeholder="" />
-        </div>
-    </div>
-
-<div class="resultsContainer">
-    <div class="sidemenu">
-      <nav class="w3-sidenav w3-light-grey w3-card-2" style="width:130px">
-        <div class="w3-container">
-          <h3>Inquire</h3>
-        </div>
-        <a href="javascript:void(0)" id="QueriesButton" class="tablink" onclick="openTab(event, 'Queries')">Queries</a>
-        <a href="javascript:void(0)" id="MapButton" class="tablink" onclick="openTab(event, 'Map')">Road Map of Queries</a>
-        <a href="javascript:void(0)" id="VisualButton" class="tablink" onclick="openTab(event, 'Visual')">Visualization</a>
-        <a href="javascript:void(0)" id="SunburstButton" class="tablink" onclick="openTab(event, 'Sunburst')">Sunburst</a>
-        <a href="javascript:void(0)" id="NodeGraphButton" class="tablink" onclick="openTab(event, 'NodeGraph')">Node Graph</a>
-      </nav>
-    </div>
-
-    <div style="margin-left:130px; width:50%">
-
-        <div style="display:flex;">
-          <div id="Queries" class="w3-container city menuoption" style="display:none;">
-            <h2>Results</h2>
-          </div>
-          <div id="userContributions" style="width: 100%; height: 100%;"></div>
-        </div>
-
-      <div id="Map" class="w3-container city menuoption" style="display:none;">
-        <h2>Road Map of Queries</h2>
       </div>
+        
+<!--         Contains all user-specified attributes for the query e.g. number of results, length etc -->
+        <div class="queryFilters">
+            <div class="input-group" style="width:120px;">
+                <span>Number of results</span>
+                <input id="topn" type="text" class="form-control input-md" value="100"
+                       placeholder="" onkeydown="if (event.keyCode == 13) document.getElementById('searchButton').click()"/>
+            </div>
 
-      <div id="Visual" class="w3-container city menuoption" style="display:none;">
-        <h2>Visualizations</h2>
-          <div id="polarity" style="width: 100%; height: 100%;" class="plotly-graph-div"></div>
-          <div id="polarityHist" style="width: 100%; height: 100%;" class="plotly-graph-div"></div>
-          <div id="histogram" style="width: 100%; height: 100%;" class="plotly-graph-div"></div>
-      </div>
-    
-    <div id="Sunburst" class="w3-container city menuoption" style="display:none;">
-        <div id="chart"></div>
-        <script>createSunburst();</script>
+            <div class="input-group" style="width:80px;">
+                <span>Min words</span>
+                <input id="minWords" type="text" class="form-control input-md" value="5"
+                       placeholder="" onkeydown="if (event.keyCode == 13) document.getElementById('searchButton').click()"/>
+            </div>
+            <div class="input-group" style="width:80px;">
+                <span>Max words</span>
+                <input id="maxWords" type="text" class="form-control input-md" value="100"
+                       placeholder="" onkeydown="if (event.keyCode == 13) document.getElementById('searchButton').click()"/>
+            </div>
+            <div class="input-group" style="width:355px;">
+                <span>Filter words</span>
+                <input id="filterWords" type="text" class="form-control input-md" value=""
+                       placeholder="" onkeydown="if (event.keyCode == 13) document.getElementById('searchButton').click()"/>
+            </div>
+        </div>
+        
+<!--     Contains the output from the request to the scala server -->
+    <div class="resultsContainer">
+        <div class="sidemenu">
+          <nav class="w3-sidenav w3-light-grey w3-card-2" style="width:130px">
+            <div class="w3-container">
+              <h3>Inquire</h3>
+            </div>
+            <a href="javascript:void(0)" id="QueriesButton" class="tablink" onclick="openTab(event, 'Queries')">Queries</a>
+            <a href="javascript:void(0)" id="NodeGraphButton" class="tablink" onclick="openTab(event, 'NodeGraph')">Node Graph</a>
+          </nav>
+        </div>
+
+        <div class="queryResultsContainer">
+
+            <div class="queryContainer">
+              <div id="Queries" class="w3-container city menuoption" style="display:none;">
+                <div id="table_div"></div>
+              </div>
+            </div>
+            
+            <!--     Contains the past queries table -->
+            <div class="historyContainer">
+                <h3>History</h3>
+                <table id="history">
+                </table>
+            </div>
+        
+
+        <div id="NodeGraph" class="w3-container city menuoption" style="display:none;">
+            <svg id="#NodeAndLinks" width="960" height="600"></svg>
+        </div>
     </div>
         
-    <div id="NodeGraph" class="w3-container city menuoption" style="display:none;">
-        <svg id="#NodeAndLinks" width="960" height="600"></svg>
-    </div>
-</div>
-
-<div class="historyContainer">
-    <table id="history">
-        <tr><td>History</td></tr>
-    </table>
-</div>
-
-<script>
-    
-query_history = []
-    
-function openTab(evt, id) {
-  var i, x, tablinks;
-  x = document.getElementsByClassName("city");
-  for (i = 0; i < x.length; i++) {
-     x[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablink");
-  for (i = 0; i < x.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
-  }
-  document.getElementById(id).style.display = "block";
-  document.getElementById(id + 'Button').className += " w3-red";
-}
-    
-function resizePlot() {
-    var bb = gd.getBoundingClientRect();
-    Plotly.relayout(gd, {
-        width: bb.width,
-        height: bb.height
-    });
-}
-
-var d;
-
-function displayEmotionVisuals() {
-    var x;
-    d3.json("mood_mappings.json", function(data) {
-        x = d.emotion[0];
-        var emotions = data;
-        var i;
-        for (i = 0; i < x.length; i++) {
-            var emo = x[i];
-            if (emotions["happy"].includes(emo)) {
-                x[i] = "happy";
-            } else if (emotions["sad"].includes(emo)) {
-                x[i] = "sad";
-            } else if (emotions["angry"].includes(emo)) {
-                x[i] = "angry";
-            } else if (emotions["stressed"].includes(emo)) {
-                x[i] = "stressed";
-            } else if (emotions["confused"].includes(emo)) {
-                x[i] = "confused";
-            } else if (emotions["energetic"].includes(emo)) {
-                x[i] = "energetic";
-            } else if (emotions["determined"].includes(emo)) {
-                x[i] = "determined";
-            } else if (emotions["discontent"].includes(emo)) {
-                x[i] = "discontent";
-            } else if (emotions["tired"].includes(emo)) {
-                x[i] = "tired";
-            } else if (emotions["exhausted"].includes(emo)) {
-                x[i] = "exhausted";
-            } else if (emotions["exanimate"].includes(emo)) {
-                x[i] = "exanimate";
-            } else if (emotions["scared"].includes(emo)) {
-                x[i] = "scared";
-            } else if (emotions["thoughtful"].includes(emo)) {
-                x[i] = "thoughtful";
-            } else if (emotions["optimistic"].includes(emo)) {
-                x[i] = "optimistic";
-            } else if (emotions["uncomfortable"].includes(emo)) {
-                x[i] = "uncomfortable";
-            } else if (emotions["working"].includes(emo)) {
-                x[i] = "working";
-            } else if (emotions["content"].includes(emo)) {
-                x[i] = "content";
-            } else if (emotions["mischievous"].includes(emo)) {
-                x[i] = "mischievous";
-            } else if (emotions["sick"].includes(emo)) {
-                x[i] = "sick";
-            } else if (emotions["refreshed"].includes(emo)) {
-                x[i] = "refreshed";
-            } else if (emotions["excited"].includes(emo)) {
-                x[i] = "excited";
-            } else if (emotions["surprised"].includes(emo)) {
-                x[i] = "surprised";
-            } else if (emotions["lazy"].includes(emo)) {
-                x[i] = "lazy";
-            } else if (emotions["okay"].includes(emo)) {
-                x[i] = "okay";
-            } else if (emotions["relaxed"].includes(emo)) {
-                x[i] = "relaxed";
-            } else if (emotions["satisfied"].includes(emo)) {
-                x[i] = "satisfied";
-            } else if (emotions["gloomy"].includes(emo)) {
-                x[i] = "gloomy";
-            } else if (emotions["anxious"].includes(emo)) {
-                x[i] = "anxious";
-            } else if (emotions["silly"].includes(emo)) {
-                x[i] = "silly";
-            } else if (emotions["nerdy"].includes(emo)) {
-                x[i] = "nerdy";
-            }
-        }
-        console.log(x);
-        var data = [
-          {
-            x: x,
-            type: 'histogram',
-            marker: {
-            color: 'rgba(100,250,100,0.7)',
-            },
-          }
-        ];
-        var layout = {
-            "autosize": false, 
-            "title": "User-generated emotions in results"
-        };
-        Plotly.newPlot('histogram', data, layout);
-    });
-}
-
-function displayUserContributions() {
-    var urls = d["url"][0];
-    var usernames = urls.map(function(str){return str.substring(7, str.length).split(".")[0]});
-    var x = usernames;
-    var data = [
-      {
-        x: x,
-        type: 'histogram',
-        marker: {
-        color: 'rgba(100,250,100,0.7)',
-        },
-      }
-    ];
-    var layout = {
-        "autosize": false, 
-        "title": "User contributions in results"
-    };
-    Plotly.newPlot('userContributions', data, layout);
-}
-    
-function displayPolarity() {
-    var len = d["result_count"];
-    var fake_polarity = 
-Array.apply(null, {length: d["result_count"]}).map(Function.call, Math.random);
-    var trace1 = {
-      x: Array.apply(null, {length: len}).map(Number.call, Number), 
-      y: d["cosine_similarity"], 
-      type: 'scatter'
-    };
-
-    var trace2 = {
-      x: Array.apply(null, {length: len}).map(Number.call, Number), 
-      y: fake_polarity, 
-      type: 'bar'
-    };
-    var layout = {
-        "autosize": false, 
-        "title": "Similarity versus sentiment polarity"
-    };
-
-    var data = [trace1, trace2];
-
-    Plotly.newPlot('polarity', data, layout);
-}
-
-function displayPolarityHist() {
-    var x = 
-Array.apply(null, {length: d["result_count"]}).map(Function.call, Math.random);
-    var data = [
-      {
-        x: x,
-        type: 'histogram',
-         histnorm: 'probability',
-         marker: {
-        color: 'rgb(255,255,100)',
-      },
-      }
-    ];
-    var layout = {
-        "autosize": false, 
-        "title": "Polarity (normalized)"
-    };
-    Plotly.newPlot('polarityHist', data, layout);
-}
-
-function showResults(evt) {
-   var query = d3.select("input").node().value
-   if (query_history.length>=10){
-       query_history.shift()
-   } 
-   query_history.push(query)
-   console.log(query_history)
-   
-   var table_contents = "<tr><th>History</th></tr>";
-
-    for (var i=0; i<query_history.length; i++) {
-      table_contents = table_contents.concat("<tr><td>" + query_history[i] + "</td></tr>");
-    }
-    
-    document.getElementById("history").innerHTML = table_contents;
-    
-   var minWords = d3.select("#minWords").node().value
-   var maxWords = d3.select("#maxWords").node().value
-   var filterWords = d3.select("#filterWords").node().value
-   var topN = d3.select("#topn").node().value
-   d3.select("#Queries").attr("style","display:block")
-   d3.select("#Queries").selectAll("p").remove()
-   d3.select("#Queries").selectAll("br").remove()
-   d3.select("#Queries").append("p").text("Loading...")
-   d3.json("/query?data="+query + "&minWords=" + minWords + "&maxWords=" + maxWords + "&filter=" + filterWords + "&top=" + topN,function(res){
-      d = res;
-      var arr = d.data.split("\n")
-      d3.select("#Queries").selectAll("p").remove()
-      d3.select("#Queries").selectAll("p").data(arr).enter()
-        .append("p").text(function(d){return d})
-      createNodeGraph(d["query_results"][0]);
-       displayEmotionVisuals();
-      // displayUserContributions();
-       //replace with:
-       createUserHist(d["url"][0]);
-      // displayPolarity();
-      
-      // displayPolarityHist();
-       });
-}
-</script>
-
-
+         
+<!-- <div id="table_div"></div> -->
 
 </body>
 </html>

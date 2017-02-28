@@ -15,6 +15,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import BIDMach.ui.LocalWebServer
+import java.io.FileWriter
+import java.util.Calendar            
 
 
 
@@ -28,6 +30,12 @@ class InquireServer extends LocalWebServer{
   val q = VecQuery
   var wsClient: NingWSClient = null
   
+  def log(s:String) {
+    val fw = new FileWriter("inquire.log",true)
+    fw.write(Calendar.getInstance.getTime.toString+"    ---    "+s+"\n")
+    fw.close()
+  }
+      
   override def routes = {
     case GET(p"/")=>
       controllers.Assets.at(path="/inquire/frontend", file="index.html")
@@ -37,7 +45,8 @@ class InquireServer extends LocalWebServer{
       val maxW = maxWords.getOrElse("100").toInt
       val topN = top.getOrElse("100").toInt
       val filterR = filter.getOrElse("")
-
+      log("%s %d %d %d %s" format (d,minW,maxW,topN,filterR))
+          
       // val n = nFiles.getOrElse("10").toInt
       // println("Running query " + d +" with " + n + "files")
 
