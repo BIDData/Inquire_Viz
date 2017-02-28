@@ -55,6 +55,27 @@ d3.request("/api/visualize/epsilon")
 
   node.append("title")
       .text(function(d) { return d.text; });
+  
+  node.on("mouseover", mouseover);
+  node.on("mouseout", mouseout);
+  var div = d3.select("body").append("div")	
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+            
+  function mouseover(d) {
+      div.transition()
+         .duration(100)
+         .style("opacity", .9);
+      
+      div.text(d.text)
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+  };
+  function mouseout(d) {
+      div.transition()
+         .duration(200)
+         .style("opacity", 0);
+  };
 
   simulation
       .nodes(graph.nodes)

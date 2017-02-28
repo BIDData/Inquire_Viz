@@ -16,9 +16,9 @@ function openTab(evt, id) {
       tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
   }
   if (id == "NodeGraph"){
-      $("#history").hide()
+      $(".historyContainer").hide()
   }else{
-      $("#history").show()
+      $(".historyContainer").show()
   }
   document.getElementById(id).style.display = "block";
   document.getElementById(id + 'Button').className += " w3-red";
