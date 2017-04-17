@@ -16,18 +16,18 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import BIDMach.ui.LocalWebServer
 import java.io.FileWriter
-import java.util.Calendar            
+import java.util.Calendar
 
 
 
 /**
   * The Server for inquire project
-  * 
+  *
   * */
 
 class InquireServer extends LocalWebServer{
   
-  val q = VecQuery
+  val q = new BufferedQuery(0.01f)//VecQuery
   var wsClient: NingWSClient = null
   
   def log(s:String) {
