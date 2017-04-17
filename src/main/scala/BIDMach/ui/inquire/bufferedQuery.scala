@@ -47,7 +47,7 @@ class BufferedQuery(val percData : Float = 0.01f,
     
     val dict = loadDict(dictFile);
     
-    val moodDict = loadDict("/home/franky/metadata_dicts/moods_dict.sbmat.lz4", pad=false);
+    val moodDict = loadDict(dataDir + "moods_dict.sbmat.lz4", pad=false);
     
     val usernames = CSMat(loadSBMat(sentsDataDir + "users_dict_full_values.sbmat.lz4"))
     
