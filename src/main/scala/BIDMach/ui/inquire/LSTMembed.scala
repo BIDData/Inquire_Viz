@@ -11,12 +11,11 @@ import scala.collection.mutable.ListBuffer
 import java.io._
 
     
-object LSTMembed {
-    val dir = "/data/livejournal/"
-    val mdir = "/data/livejournal/models/"
-    val odir = "/data/livejournal/preds_newtrainfinalfull/";  // Directory for input data
+class LSTMembed(dir : String = "/big/livejournal/mercury/destress/") {
+    val mdir = dir + "models/"
+    val odir = dir + "preds/";  // Directory for input data
 
-    val w = loadSBMat(dir + "sentences/masterDict.sbmat")
+    val w = loadSBMat(dir + "sentences2/masterDict.sbmat")
     val dict = Dict(w,irow(0->w.ncols))
 
     class Eopts extends Learner.Options with SeqToSeq.Opts with MatSource.Opts

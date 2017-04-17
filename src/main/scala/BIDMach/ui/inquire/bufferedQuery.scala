@@ -77,6 +77,7 @@ class BufferedQuery(val percData : Float = 0.01f,
     
     var tmp_embed_data : FMat = null
 
+    val lstmEmbedObj = new LSTMembed(dataDir)
 
     val listLabels = new File(sentsDataDir).list.filter(_.endsWith("_sent.smat.lz4")).filter(_.startsWith("data"));
     
@@ -236,7 +237,7 @@ class BufferedQuery(val percData : Float = 0.01f,
       println(query_s)
       // Convert input query to a word2vec vector
       tic
-      val query_vec = if (embedding == 0) make_query_vec(query_s) else LSTMembed.genVec(query_s)
+      val query_vec = if (embedding == 0) make_query_vec(query_s) else lstmEmbedObj.genVec(query_s)
       println("Finish making vec in %.3f seconds" format toc)
       tic
 
@@ -349,7 +350,7 @@ class BufferedQuery(val percData : Float = 0.01f,
       println(query_s)
       // Convert input query to a word2vec vector
       tic
-      val query_vec = if (embedding == 0) make_query_vec(query_s) else LSTMembed.genVec(query_s)
+      val query_vec = if (embedding == 0) make_query_vec(query_s) else lstmEmbedObj.genVec(query_s)
       println("Finish making vec in %.3f seconds" format toc)
       tic
       var filterRegex = new Regex("");
