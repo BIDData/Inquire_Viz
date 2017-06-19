@@ -27,7 +27,9 @@ import java.util.Calendar
 
 class InquireServer extends LocalWebServer{
   
-  val q = new BufferedQuery(0.01f)//VecQuery
+  val q = new BufferedQuery(0.01f,"/home/data/livejournal/")//VecQuery
+  val q_reddit = new BufferedQuery(0.03f,"/commuter/mallickd/matrix_full_dataset/",0,1)  
+
   var wsClient: NingWSClient = null
   
   def log(s:String) {
@@ -39,18 +41,20 @@ class InquireServer extends LocalWebServer{
   override def routes = {
     case GET(p"/")=>
       controllers.Assets.at(path="/inquire/frontend", file="index.html")
-    case GET(p"/query" ? q_o"data=$data" & q_o"nFiles=$nFiles" & q_o"minWords=$minWords" & q_o"maxWords=$maxWords" & q_o"top=$top" & q_o"filter=$filter") => Action {
+    case GET(p"/query" ? q_o"data=$data" & q_o"nFiles=$nFiles" & q_o"minWords=$minWords" & q_o"maxWords=$maxWords" & q_o"top=$top" & q_o"filter=$filter" & q_o"dataset=$dataset") => Action {
       val d = data.getOrElse("")
       val minW = minWords.getOrElse("5").toInt
       val maxW = maxWords.getOrElse("100").toInt
-      val topN = top.getOrElse("100").toInt
+      val topN = top.getOrElse("100").toInt        
       val filterR = filter.getOrElse("")
-      log("%s %d %d %d %s" format (d,minW,maxW,topN,filterR))
+      val ds = dataset.getOrElse("livejournal") //by default
+      log("%s %d %d %d %s %s" format (d,minW,maxW,topN,filterR,ds))
           
       // val n = nFiles.getOrElse("10").toInt
       // println("Running query " + d +" with " + n + "files")
-
-      val (scores,sents,moods,urls) = q.query(d,topN,filterR,minW,maxW)
+ 
+      val (scores,sents,moods,urls) = if (d.startsWith("@reddit")) q_reddit.query(d.substring(8),topN,filterR,minW,maxW,0)
+                                      else q.query(d,topN,filterR,minW,maxW)
       Results.Ok(Json.obj(
         "result_count" -> scores.length,
         "query" -> d,
@@ -66,7 +70,7 @@ class InquireServer extends LocalWebServer{
     }
     case POST(p"/api/visualize/$api*") => Action.async{ implicit request => {
       if (wsClient == null) wsClient = NingWSClient()
-      println(request.body.asJson.toString)
+//      println(request.body.asJson.toString)
       wsClient.url("http://localhost:8080/api/visualize/"+api)
         .withHeaders("Content-Type" -> "application/json")
         .post(request.body.asJson.getOrElse(Json.obj()).toString)

@@ -26,11 +26,13 @@ import java.io._
 
 class BufferedQuery(val percData : Float = 0.01f, 
                     val dataDir : String = "/big/livejournal/mercury/destress/",
-                    val corpus : Int = 0
+                    val corpus : Int = 0,
+                    val dataset: Int = 0
                    ) {
     Mat.checkMKL
     Mat.checkCUDA
     Mat.useCache= true
+    Mat.useGPUcache= true
 
     // Constants
     val sentsDataDir = dataDir + "sentences2/"
@@ -49,7 +51,7 @@ class BufferedQuery(val percData : Float = 0.01f,
     
     val moodDict = loadDict(dataDir + "moods_dict.sbmat.lz4", pad=false);
     
-    val usernames = CSMat(loadSBMat(sentsDataDir + "users_dict_full_values.sbmat.lz4"))
+    val usernames = if (dataset ==0 )CSMat(loadSBMat(sentsDataDir + "users_dict_full_values.sbmat.lz4")) else null
     
     val w2vMatFile = sentsDataDir + (if (corpus == 0 ) "googleEmbeddings.fmat" else "LJEmbeddings.fmat")
     
@@ -77,7 +79,7 @@ class BufferedQuery(val percData : Float = 0.01f,
     
     var tmp_embed_data : FMat = null
 
-    val lstmEmbedObj = new LSTMembed(dataDir)
+    val lstmEmbedObj = if (dataset == 0)new LSTMembed(dataDir) else null
 
     val listLabels = new File(sentsDataDir).list.filter(_.endsWith("_sent.smat.lz4")).filter(_.startsWith("data"));
     
@@ -96,7 +98,7 @@ class BufferedQuery(val percData : Float = 0.01f,
         opts.nend = nFiles
         opts.nstart = 0
         opts.eltsPerSample = sentsSize  //Upper bound of the average sentence length
-        implicit val threads = threadPool(4)
+        implicit val threads = threadPool(1)
         val ds = new SFileSource(opts)
         ds.init
         ds
@@ -108,7 +110,7 @@ class BufferedQuery(val percData : Float = 0.01f,
         opts.batchSize = 100000;//500000;
         opts.nstart = 0
         opts.nend = nFiles
-        implicit val threads = threadPool(4)
+        implicit val threads = threadPool(1)
         val ds = new FileSource(opts)
         ds.init
         ds
@@ -130,46 +132,48 @@ class BufferedQuery(val percData : Float = 0.01f,
 
     	val sentDs = getSFDS(sentFile,nrFiles2Load)
     	val bowDs = getSFDS(bowFile,nrFiles2Load)
-    	val idDs = getFDS(idFile,nrFiles2Load)
-    	val userDs = getFDS(userFile,nrFiles2Load)
+    	val idDs = if (dataset == 0)getFDS(idFile,nrFiles2Load) else null
+    	val userDs = if (dataset == 0) getFDS(userFile,nrFiles2Load) else null
 
-        val lstmSentDs = getSFDS(lstmSentFile,nrFiles2Load)
-    	val embedDs = getFDS(embedFile,nrFiles2Load*4)
-    	val lstmIdDs = getFDS(lstmIdFile,nrFiles2Load)
-    	val lstmUserDs = getFDS(lstmUserFile,nrFiles2Load)            
+        val lstmSentDs = if (dataset == 0) getSFDS(lstmSentFile,nrFiles2Load) else null
+    	val embedDs = if (dataset == 0) getFDS(embedFile,nrFiles2Load*4) else null
+    	val lstmIdDs = if (dataset == 0) getFDS(lstmIdFile,nrFiles2Load) else null
+    	val lstmUserDs = if (dataset == 0) getFDS(lstmUserFile,nrFiles2Load) else null      
             
         var tot = 0
         Mat.useCache = false
         while (sentDs.hasNext){
     		val sent = (sentDs.next)(0).asInstanceOf[SMat]
     		val bow = (bowDs.next)(0).asInstanceOf[SMat]
-    		val id = (idDs.next)(0).asInstanceOf[IMat]
-    		val user = (userDs.next)(0).asInstanceOf[IMat]
-            tot += user.length
+    		val id = if (dataset == 0)(idDs.next)(0).asInstanceOf[IMat] else null
+    		val user = if (dataset == 0) (userDs.next)(0).asInstanceOf[IMat] else null
+            tot += sent.ncols
             sent_data += sent.copy;
             bow_data += bow.copy;
-            id_data += id.copy;
-            user_data += user.copy;
+            if (dataset == 0) id_data += id.copy;
+            if (dataset == 0) user_data += user.copy;
         }    
         tmp_bow_data = bow_data(0).copy.asInstanceOf[SMat]
         tot = 0
-        while (lstmSentDs.hasNext){
-    		val sent = (lstmSentDs.next)(0).asInstanceOf[SMat]
-    		val embed = (embedDs.next)(0).asInstanceOf[FMat]
-    		val id = (lstmIdDs.next)(0).asInstanceOf[IMat]
-    		val user = (lstmUserDs.next)(0).asInstanceOf[IMat]
-            tot += user.length
-            lstm_sent_data += sent.copy;
-            lstm_embed_data += embed.copy;
-//            println(norm(lstm_embed_data(0)),norm(lstm_embed_data(lstm_embed_data.length-1)),norm(embed))
-//            println(lstm_embed_data(0).GUID,lstm_embed_data(lstm_embed_data.length-1).GUID,embed.GUID)
-            lstm_id_data += id.copy;
-            lstm_user_data += user.copy;
-        }  
-/*        for(i<-0 until lstm_sent_data.length){
-            println((i,lstm_sent_data(i).nnz,norm(lstm_embed_data(i).asInstanceOf[FMat])))
-        }*/
-        tmp_embed_data = lstm_embed_data(0).copy.asInstanceOf[FMat]
+        if (dataset == 0) {
+            while (lstmSentDs.hasNext){
+                val sent = (lstmSentDs.next)(0).asInstanceOf[SMat]
+                val embed = (embedDs.next)(0).asInstanceOf[FMat]
+                val id = (lstmIdDs.next)(0).asInstanceOf[IMat]
+                val user = (lstmUserDs.next)(0).asInstanceOf[IMat]
+                tot += user.length
+                lstm_sent_data += sent.copy;
+                lstm_embed_data += embed.copy;
+    //            println(norm(lstm_embed_data(0)),norm(lstm_embed_data(lstm_embed_data.length-1)),norm(embed))
+    //            println(lstm_embed_data(0).GUID,lstm_embed_data(lstm_embed_data.length-1).GUID,embed.GUID)
+                lstm_id_data += id.copy;
+                lstm_user_data += user.copy;
+            }  
+    /*        for(i<-0 until lstm_sent_data.length){
+                println((i,lstm_sent_data(i).nnz,norm(lstm_embed_data(i).asInstanceOf[FMat])))
+            }*/
+            tmp_embed_data = lstm_embed_data(0).copy.asInstanceOf[FMat]
+        }
         Mat.useCache = true
         println("Finished loading %d files in %.3f seconds..." format (nrFiles2Load,toc))
     }
@@ -265,8 +269,9 @@ class BufferedQuery(val percData : Float = 0.01f,
 //          println(k)
           tic
           val dataMat = if (embedding == 0){
-              bow_data(k).copyTo(tmp_bow_data)
-              val magic = w2vGMat* GSMat(tmp_bow_data)
+//              bow_data(k).copyTo(tmp_bow_data)
+              val magic = w2vMat* bow_data(k)
+//              val magic = w2vGMat* GSMat(tmp_bow_data)
               magic ~ magic / (sqrt(magic dot magic)+1e-7f)
               magic
           }
@@ -277,8 +282,8 @@ class BufferedQuery(val percData : Float = 0.01f,
               d/sqrt(snorm(d))
           }
           val sents = sdata(k).asInstanceOf[SMat]
-          val users = udata(k).asInstanceOf[IMat]
-          val labels = idata(k).asInstanceOf[IMat]
+          val users = if (dataset == 0)udata(k).asInstanceOf[IMat] else null
+          val labels = if (dataset == 0) idata(k).asInstanceOf[IMat] else null
           val res = FMat(query_vec.t * dataMat);  // 1x#sentences
           res(find(1-((res dot res)>=0))) = -1; // sentence sums to 0
           val (x, bestIndex) = sortdown2(res);
@@ -298,7 +303,11 @@ class BufferedQuery(val percData : Float = 0.01f,
               
           while(i<last) {
             var ix = bestIndex(i);
-            val s0 = sents(?,ix).data.filter(_>0)
+//            println(x(i),ix)
+            if (x(i)-1f >= -1e-6f)
+                println(k,ix)
+            val (_,_,s00) = find3(sents(?,ix))
+            val s0 = s00.data.filter(_>0)
             val ss = if (embedding == 0 ) s0 else s0.reverse
             val sent = ss.map(x=>dict(x.toInt)).mkString(" ").replace(" ,", " ")
 
@@ -309,23 +318,26 @@ class BufferedQuery(val percData : Float = 0.01f,
               && (filterRegex== null || filterRegex.findFirstIn(sent) == None) // filter for words
             ) { 
                   prev_res = res(ix);
-                  if (ix<labels.ncols && users(ix)<usernames.length && users(ix)>=0) {
-                      val moodid = labels(1, ix);
-                      val ditemid = labels(2, ix);
-                      val timestamp = labels(3, ix);
-                      // val user_idx = ditemid % 100000  + 100000*(timestamp % 10000);
+                  if ((dataset>0)||(ix<labels.ncols && users(ix)<usernames.length && users(ix)>=0)) {
+                      var mood = ""
+                      if (dataset == 0) {
+                          val moodid = labels(1, ix);
+                          val ditemid = labels(2, ix);
+                          val timestamp = labels(3, ix);
+                          // val user_idx = ditemid % 100000  + 100000*(timestamp % 10000);
 
-                      // val user = CSMat(users(?, ix))(0);
-                      //println(users(ix), ix)
-                      val user = (if (users(ix)>=usernames.length || users(ix)<0) {}//println("ERROR: "+users(ix));"-1"} 
-                                  else usernames(users(ix)));
-                      val mood = moodDict(moodid);
+                          // val user = CSMat(users(?, ix))(0);
+                          //println(users(ix), ix)
+                          val user = (if (users(ix)>=usernames.length || users(ix)<0) {}//println("ERROR: "+users(ix));"-1"} 
+                                      else usernames(users(ix)));
+                          mood = moodDict(moodid);
 
-                      url = "http://" + user + ".livejournal.com/" + ditemid + ".html";
+                          url = "http://" + user + ".livejournal.com/" + ditemid + ".html";
+                      }
 
                       // user is wrong for now, will fix later
 
-//                      printf("%.3f -- %s -- %s -- %s \n", res(ix), sent, mood, url);
+                      //printf("%.3f -- %s -- %s -- %s \n", res(ix), sent, mood, url);
                       scores+=res(ix);
                       ressents+=sent;
                       moods+=mood;
@@ -340,9 +352,10 @@ class BufferedQuery(val percData : Float = 0.01f,
             i += 1;
           }
       }
-      println("Compute time: %.3f" format computeTime)
+      println("Compute time: %.3f, %.3f GPU mem left" format (computeTime,GPUmem._1))
 //      (scores,ressents,moods,urls)
       val data = (0 until scores.length).map(i=>(scores(i),ressents(i),moods(i),urls(i))).sortBy(-_._1).take(top)
+      println(data.map(x=>x._1+" "+x._2).reduce(_+"\n"+_))
       (data.map(_._1),data.map(_._2),data.map(_._3),data.map(_._4))
     }
     
@@ -399,7 +412,8 @@ class BufferedQuery(val percData : Float = 0.01f,
           val dataMat = if (embedding == 0){
               val bow_data = (bowDs.next)(0).asInstanceOf[SMat]
               readTime += toc;tic            
-              val magic = w2vGMat* GSMat(bow_data.asInstanceOf[SMat])
+//              val magic = w2vGMat* GSMat(bow_data.asInstanceOf[SMat])
+              val magic = w2vMat* (bow_data.asInstanceOf[SMat])
               magic ~ magic / (sqrt(magic dot magic)+1e-7f)
               magic
           }
@@ -491,12 +505,15 @@ class BufferedQuery(val percData : Float = 0.01f,
     
 object BufferedQuery{
     def main(args:Array[String]) {
-        val q = new BufferedQuery(0.01f)  
+        val q = new BufferedQuery(0.02f,"/commuter/mallickd/matrix_full_dataset/",0,1)  
+//        val q = new BufferedQuery(0.002f,"/home/data/livejournal/")  
         setGPU(1)
 //        q.query("I hate commute",10)
 //        q.query("I feel good today",10,embedding = 0)
 //        q.query("I feel good today",10,embedding = 1)
-        q.query("I hate commute",100,embedding = 1)
+//        q.query("I hate commute",100,embedding = 1,filter = "think")
+//        q.query("music is my life",100,embedding = 0)
+        q.query("music",100,embedding = 0,minWords=1)
     }
 }
 
