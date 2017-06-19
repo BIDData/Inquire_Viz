@@ -4,7 +4,9 @@
 #### Install and build
 
 This is the repo for [INQUIRE Tool: Early Insight Discovery for Qualitative Research]
+
 For the new inquire backend, please refer to https://github.com/peparedes/inquire-web-backend
+
 And try it on http://commuterweb.stanford.edu/
 
 This toolkit uses [play] web framework and it requires Java 8. We use [maven] for package management. You can modify [pom.xml] to configure the build process. 
